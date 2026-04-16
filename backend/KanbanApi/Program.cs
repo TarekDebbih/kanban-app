@@ -1,7 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
+using KanbanApi.Data;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlite("Data Source=kanban.db"));
+    
 // Services
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
