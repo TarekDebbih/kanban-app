@@ -1,11 +1,6 @@
 using KanbanApi.Models;
 using KanbanApi.Services;
 using Microsoft.AspNetCore.Mvc;
-namespace KanbanApi.Controllers;
-
-using KanbanApi.Models;
-using KanbanApi.Services;
-using Microsoft.AspNetCore.Mvc;
 
 namespace KanbanApi.Controllers;
 
