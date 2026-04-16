@@ -2,11 +2,11 @@ using KanbanApi.Models;
 
 namespace KanbanApi.Repositories;
 
-    public interface IKanbanColumnRepository
+public interface IKanbanColumnRepository
 {
+    Task<KanbanColumn?> GetByIdAsync(int id);
     Task<List<KanbanColumn>> GetAllAsync();
-        Task<KanbanColumn?> GetByIdAsync(int id);
-        Task<KanbanColumn> CreateAsync(KanbanColumn kanbanColumn);
-        Task<KanbanColumn?> UpdateAsync(int id, KanbanColumn kanbanColumn);
-        Task<bool> DeleteAsync(int id);
+    Task AddAsync(KanbanColumn kanbanColumn);
+    Task<KanbanColumn?> UpdateAsync(int id, KanbanColumn kanbanColumn);
+    Task<bool> DeleteAsync(int id);
 }
