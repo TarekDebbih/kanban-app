@@ -32,7 +32,7 @@ public class UsersController : ControllerBase
     [HttpGet("{email}")]
     public async Task<IActionResult> GetUserByEmail(string email)
     {
-        var user = await _userService.GetUserByEmailAsync(email);
+        var user = await _userService.GetByEmailAsync(email);
 
         if (user == null)
         {
