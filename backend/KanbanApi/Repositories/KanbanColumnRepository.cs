@@ -18,7 +18,7 @@ public class KanbanColumnRepository : IKanbanColumnRepository
         return await _context.KanbanColumns.FirstOrDefaultAsync(kc => kc.Id == id);
     }
 
-    public async task<List<KanbanColumn>> GetAllAsync()
+    public async Task<List<KanbanColumn>> GetAllAsync()
     {
         return await _context.KanbanColumns.ToListAsync();
     }

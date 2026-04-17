@@ -1,4 +1,4 @@
-namespace backend.Models
+namespace KanbanApi.Models
 {
     public class KanbanColumn
     {
