@@ -16,21 +16,14 @@ public class UsersController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateUser(User user)
+    public async Task<ActionResult<User>> CreateUser([FromBody] User user)
     {
-        try
-        {
-            var createdUser = await _userService.CreateUserAsync(user);
-            return Ok(createdUser);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
+        var createdUser = await _userService.CreateUserAsync(user);
+        return CreatedAtAction(nameof(GetUserByEmail), new { email = createdUser.Email }, createdUser);
     }
 
     [HttpGet("{email}")]
-    public async Task<IActionResult> GetUserByEmail(string email)
+    public async Task<ActionResult<User>> GetUserByEmail(string email)
     {
         var user = await _userService.GetByEmailAsync(email);
 
