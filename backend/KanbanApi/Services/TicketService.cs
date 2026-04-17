@@ -6,10 +6,14 @@ namespace KanbanApi.Services;
 public class TicketService : ITicketService
 {
     private readonly ITicketRepository _ticketRepository;
+    private readonly IKanbanColumnRepository _kanbanColumnRepository;
 
-    public TicketService(ITicketRepository ticketRepository)
+    public TicketService(
+        ITicketRepository ticketRepository,
+        IKanbanColumnRepository kanbanColumnRepository)
     {
         _ticketRepository = ticketRepository;
+        _kanbanColumnRepository = kanbanColumnRepository;
     }
 
     public async Task<Ticket?> GetByIdAsync(int id)
@@ -22,13 +26,31 @@ public class TicketService : ITicketService
         return await _ticketRepository.GetAllAsync();
     }
 
-    public async Task AddAsync(Ticket ticket)
+    public async Task<Ticket?> AddAsync(Ticket ticket)
     {
+        var kanbanColumn = await _kanbanColumnRepository.GetByIdAsync(ticket.KanbanColumnId);
+
+        if (kanbanColumn == null)
+        {
+            return null;
+        }
+
+        ticket.CreatedAt = DateTime.UtcNow;
+
         await _ticketRepository.AddAsync(ticket);
+
+        return ticket;
     }
 
     public async Task<Ticket?> UpdateAsync(int id, Ticket ticket)
     {
+        var kanbanColumn = await _kanbanColumnRepository.GetByIdAsync(ticket.KanbanColumnId);
+
+        if (kanbanColumn == null)
+        {
+            return null;
+        }
+
         return await _ticketRepository.UpdateAsync(id, ticket);
     }
 

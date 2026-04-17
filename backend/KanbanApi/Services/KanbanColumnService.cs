@@ -22,13 +22,28 @@ public class KanbanColumnService : IKanbanColumnService
         return await _kanbanColumnRepository.GetAllAsync();
     }
 
-    public async Task AddAsync(KanbanColumn kanbanColumn)
+    public async Task<KanbanColumn?> AddAsync(KanbanColumn kanbanColumn)
     {
+        var user = await _kanbanColumnRepository.GetByidAsync(kanbanColumn.UserId);
+
+        if (user == null)
+        {
+            return null;
+        }
+
         await _kanbanColumnRepository.AddAsync(kanbanColumn);
+        return kanbanColumn;
     }
 
     public async Task<KanbanColumn?> UpdateAsync(int id, KanbanColumn kanbanColumn)
     {
+        var user = await _kanbanColumnRepository.GetByidAsync(kanbanColumn.UserId);
+
+        if (user == null)
+        {
+            return null;
+        }
+
         return await _kanbanColumnRepository.UpdateAsync(id, kanbanColumn);
     }
 

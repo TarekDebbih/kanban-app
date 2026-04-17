@@ -36,10 +36,16 @@ public class TicketController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult> Create([FromBody] Ticket ticket)
+    public async Task<ActionResult<Ticket>> Create([FromBody] Ticket ticket)
     {
-        await _ticketService.AddAsync(ticket);
-        return CreatedAtAction(nameof(GetById), new { id = ticket.Id }, ticket);
+        var createdTicket = await _ticketService.AddAsync(ticket);
+
+        if (createdTicket == null)
+        {
+            return BadRequest("Kanban column not found.");
+        }
+
+        return CreatedAtAction(nameof(GetById), new { id = createdTicket.Id }, createdTicket);
     }
 
     [HttpPut("{id}")]
@@ -49,7 +55,7 @@ public class TicketController : ControllerBase
 
         if (updatedTicket == null)
         {
-            return NotFound();
+            return BadRequest("Kanban column not found or ticket not found.");
         }
 
         return Ok(updatedTicket);

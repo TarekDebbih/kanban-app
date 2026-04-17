@@ -36,10 +36,16 @@ public class KanbanColumnController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult> Create([FromBody] KanbanColumn kanbanColumn)
+    public async Task<ActionResult<KanbanColumn>> Create([FromBody] KanbanColumn kanbanColumn)
     {
-        await _kanbanColumnService.AddAsync(kanbanColumn);
-        return CreatedAtAction(nameof(GetById), new { id = kanbanColumn.Id }, kanbanColumn);
+        var createdKanbanColumn = await _kanbanColumnService.AddAsync(kanbanColumn);
+
+        if (createdKanbanColumn == null)
+        {
+            return BadRequest("User not found.");
+        }
+
+        return CreatedAtAction(nameof(GetById), new { id = createdKanbanColumn.Id }, createdKanbanColumn);
     }
 
     [HttpPut("{id}")]
@@ -49,7 +55,7 @@ public class KanbanColumnController : ControllerBase
 
         if (updatedKanbanColumn == null)
         {
-            return NotFound();
+            return BadRequest("User not found or Kanban column not found.");
         }
 
         return Ok(updatedKanbanColumn);
