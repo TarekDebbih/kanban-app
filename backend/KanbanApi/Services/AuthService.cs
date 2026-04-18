@@ -33,9 +33,12 @@ public class AuthService : IAuthService
             return null;
         }
 
+        var expireMinutes = _configuration.GetValue<int>("Jwt:expireMinutes");
+        var rememberMeExpireDays = _configuration.GetValue<int>("Jwt:rememberMeExpireDays");
+
         var expiration = loginRequest.RememberMe
-            ? DateTime.UtcNow.AddDays(7)
-            : DateTime.UtcNow.AddHours(1);
+            ? DateTime.UtcNow.AddDays(rememberMeExpireDays)
+            : DateTime.UtcNow.AddMinutes(expireMinutes);
 
         var token = GenerateJwtToken(user, expiration);
 
