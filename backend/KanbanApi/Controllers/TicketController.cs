@@ -1,6 +1,7 @@
 using KanbanApi.Models;
 using KanbanApi.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace KanbanApi.Controllers;
 
@@ -15,6 +16,7 @@ public class TicketController : ControllerBase
         _ticketService = ticketService;
     }
 
+    [Authorize]
     [HttpGet]
     public async Task<ActionResult<List<Ticket>>> GetAll()
     {
