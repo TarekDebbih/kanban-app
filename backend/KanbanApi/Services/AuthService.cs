@@ -50,10 +50,11 @@ public class AuthService : IAuthService
             Role = user.Role
         };
     }
-
     private string GenerateJwtToken(User user, DateTime expiration)
     {
         var jwtKey = _configuration["Jwt:Key"];
+        var jwtIssuer = _configuration["Jwt:Issuer"];
+        var jwtAudience = _configuration["Jwt:Audience"];
 
         if (string.IsNullOrWhiteSpace(jwtKey))
         {
@@ -71,6 +72,8 @@ public class AuthService : IAuthService
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var token = new JwtSecurityToken(
+            issuer: jwtIssuer,
+            audience: jwtAudience,
             claims: claims,
             expires: expiration,
             signingCredentials: credentials
