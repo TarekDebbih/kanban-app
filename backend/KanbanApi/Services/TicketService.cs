@@ -82,7 +82,7 @@ public class TicketService : ITicketService
         existingTicket.Position = updateTicketDto.Position;
         existingTicket.KanbanColumnId = updateTicketDto.KanbanColumnId;
 
-        await _ticketRepository.UpdateAsync(existingTicket);
+        await _ticketRepository.UpdateAsync(id, existingTicket);
 
         return MapToResponseDto(existingTicket);
     }

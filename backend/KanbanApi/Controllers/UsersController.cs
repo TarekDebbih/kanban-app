@@ -1,6 +1,7 @@
 using KanbanApi.Dtos;
 using KanbanApi.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace KanbanApi.Controllers;
 

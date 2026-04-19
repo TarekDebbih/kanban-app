@@ -1,3 +1,5 @@
+using KanbanApi.Dtos;
+
 public interface ITicketService
 {
     Task<List<TicketResponseDto>> GetAllAsync();
