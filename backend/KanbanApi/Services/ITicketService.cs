@@ -1,12 +1,8 @@
-using KanbanApi.Models;
-
-namespace KanbanApi.Services;
-
 public interface ITicketService
 {
-    Task<Ticket?> GetByIdAsync(int id);
-    Task<List<Ticket>> GetAllAsync();
-    Task<Ticket?> AddAsync(Ticket ticket);
-    Task<Ticket?> UpdateAsync(int id, Ticket ticket);
+    Task<List<TicketResponseDto>> GetAllAsync();
+    Task<TicketResponseDto?> GetByIdAsync(int id);
+    Task<TicketResponseDto?> CreateAsync(CreateTicketDto createTicketDto);
+    Task<TicketResponseDto?> UpdateAsync(int id, UpdateTicketDto updateTicketDto);
     Task<bool> DeleteAsync(int id);
 }

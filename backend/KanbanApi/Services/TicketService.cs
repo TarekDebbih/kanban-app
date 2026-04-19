@@ -1,3 +1,4 @@
+using KanbanApi.Dtos;
 using KanbanApi.Models;
 using KanbanApi.Repositories;
 
@@ -16,46 +17,92 @@ public class TicketService : ITicketService
         _kanbanColumnRepository = kanbanColumnRepository;
     }
 
-    public async Task<Ticket?> GetByIdAsync(int id)
+    public async Task<List<TicketResponseDto>> GetAllAsync()
     {
-        return await _ticketRepository.GetByIdAsync(id);
+        var tickets = await _ticketRepository.GetAllAsync();
+
+        return tickets.Select(MapToResponseDto).ToList();
     }
 
-    public async Task<List<Ticket>> GetAllAsync()
+    public async Task<TicketResponseDto?> GetByIdAsync(int id)
     {
-        return await _ticketRepository.GetAllAsync();
+        var ticket = await _ticketRepository.GetByIdAsync(id);
+
+        if (ticket == null)
+        {
+            return null;
+        }
+
+        return MapToResponseDto(ticket);
     }
 
-    public async Task<Ticket?> AddAsync(Ticket ticket)
+    public async Task<TicketResponseDto?> CreateAsync(CreateTicketDto createTicketDto)
     {
-        var kanbanColumn = await _kanbanColumnRepository.GetByIdAsync(ticket.KanbanColumnId);
+        var kanbanColumn = await _kanbanColumnRepository.GetByIdAsync(createTicketDto.KanbanColumnId);
 
         if (kanbanColumn == null)
         {
             return null;
         }
 
-        ticket.CreatedAt = DateTime.UtcNow;
+        var ticket = new Ticket
+        {
+            Title = createTicketDto.Title,
+            Description = createTicketDto.Description,
+            TimeSpentHours = createTicketDto.TimeSpentHours,
+            Position = createTicketDto.Position,
+            KanbanColumnId = createTicketDto.KanbanColumnId,
+            CreatedAt = DateTime.UtcNow
+        };
 
         await _ticketRepository.AddAsync(ticket);
 
-        return ticket;
+        return MapToResponseDto(ticket);
     }
 
-    public async Task<Ticket?> UpdateAsync(int id, Ticket ticket)
+    public async Task<TicketResponseDto?> UpdateAsync(int id, UpdateTicketDto updateTicketDto)
     {
-        var kanbanColumn = await _kanbanColumnRepository.GetByIdAsync(ticket.KanbanColumnId);
+        var existingTicket = await _ticketRepository.GetByIdAsync(id);
+
+        if (existingTicket == null)
+        {
+            return null;
+        }
+
+        var kanbanColumn = await _kanbanColumnRepository.GetByIdAsync(updateTicketDto.KanbanColumnId);
 
         if (kanbanColumn == null)
         {
             return null;
         }
 
-        return await _ticketRepository.UpdateAsync(id, ticket);
+        existingTicket.Title = updateTicketDto.Title;
+        existingTicket.Description = updateTicketDto.Description;
+        existingTicket.TimeSpentHours = updateTicketDto.TimeSpentHours;
+        existingTicket.Position = updateTicketDto.Position;
+        existingTicket.KanbanColumnId = updateTicketDto.KanbanColumnId;
+
+        await _ticketRepository.UpdateAsync(existingTicket);
+
+        return MapToResponseDto(existingTicket);
     }
 
     public async Task<bool> DeleteAsync(int id)
     {
         return await _ticketRepository.DeleteAsync(id);
+    }
+
+    private static TicketResponseDto MapToResponseDto(Ticket ticket)
+    {
+        return new TicketResponseDto
+        {
+            Id = ticket.Id,
+            Title = ticket.Title,
+            Description = ticket.Description,
+            TimeSpentHours = ticket.TimeSpentHours,
+            CreatedAt = ticket.CreatedAt,
+            Position = ticket.Position,
+            KanbanColumnId = ticket.KanbanColumnId
+        };
     }
 }

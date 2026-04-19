@@ -1,5 +1,4 @@
 using KanbanApi.Dtos;
-using KanbanApi.Models;
 using KanbanApi.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +7,7 @@ namespace KanbanApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class TicketController : ControllerBase
 {
     private readonly ITicketService _ticketService;
@@ -17,17 +17,13 @@ public class TicketController : ControllerBase
         _ticketService = ticketService;
     }
 
-    [Authorize]
     [HttpGet]
     public async Task<ActionResult<List<TicketResponseDto>>> GetAll()
     {
         var tickets = await _ticketService.GetAllAsync();
-        var response = tickets.Select(MapToResponseDto).ToList();
-
-        return Ok(response);
+        return Ok(tickets);
     }
 
-    [Authorize]
     [HttpGet("{id}")]
     public async Task<ActionResult<TicketResponseDto>> GetById(int id)
     {
@@ -35,61 +31,38 @@ public class TicketController : ControllerBase
 
         if (ticket == null)
         {
-            return NotFound();
+            return NotFound("Ticket not found.");
         }
 
-        return Ok(MapToResponseDto(ticket));
+        return Ok(ticket);
     }
 
-    [Authorize]
     [HttpPost]
     public async Task<ActionResult<TicketResponseDto>> Create([FromBody] CreateTicketDto createTicketDto)
     {
-        var ticket = new Ticket
-        {
-            Title = createTicketDto.Title,
-            Description = createTicketDto.Description,
-            TimeSpentHours = createTicketDto.TimeSpentHours,
-            Position = createTicketDto.Position,
-            KanbanColumnId = createTicketDto.KanbanColumnId
-        };
-
-        var createdTicket = await _ticketService.AddAsync(ticket);
+        var createdTicket = await _ticketService.CreateAsync(createTicketDto);
 
         if (createdTicket == null)
         {
             return BadRequest("Kanban column not found.");
         }
 
-        var response = MapToResponseDto(createdTicket);
-
-        return CreatedAtAction(nameof(GetById), new { id = response.Id }, response);
+        return CreatedAtAction(nameof(GetById), new { id = createdTicket.Id }, createdTicket);
     }
 
-    [Authorize]
     [HttpPut("{id}")]
     public async Task<ActionResult<TicketResponseDto>> Update(int id, [FromBody] UpdateTicketDto updateTicketDto)
     {
-        var ticket = new Ticket
-        {
-            Title = updateTicketDto.Title,
-            Description = updateTicketDto.Description,
-            TimeSpentHours = updateTicketDto.TimeSpentHours,
-            Position = updateTicketDto.Position,
-            KanbanColumnId = updateTicketDto.KanbanColumnId
-        };
-
-        var updatedTicket = await _ticketService.UpdateAsync(id, ticket);
+        var updatedTicket = await _ticketService.UpdateAsync(id, updateTicketDto);
 
         if (updatedTicket == null)
         {
-            return BadRequest("Kanban column not found or ticket not found.");
+            return NotFound("Ticket not found.");
         }
 
-        return Ok(MapToResponseDto(updatedTicket));
+        return Ok(updatedTicket);
     }
 
-    [Authorize]
     [HttpDelete("{id}")]
     public async Task<ActionResult> Delete(int id)
     {
@@ -97,23 +70,9 @@ public class TicketController : ControllerBase
 
         if (!deleted)
         {
-            return NotFound();
+            return NotFound("Ticket not found.");
         }
 
         return NoContent();
-    }
-
-    private static TicketResponseDto MapToResponseDto(Ticket ticket)
-    {
-        return new TicketResponseDto
-        {
-            Id = ticket.Id,
-            Title = ticket.Title,
-            Description = ticket.Description,
-            TimeSpentHours = ticket.TimeSpentHours,
-            CreatedAt = ticket.CreatedAt,
-            Position = ticket.Position,
-            KanbanColumnId = ticket.KanbanColumnId
-        };
     }
 }
