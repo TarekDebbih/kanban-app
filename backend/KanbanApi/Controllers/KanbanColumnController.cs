@@ -1,11 +1,13 @@
-using KanbanApi.Models;
+using KanbanApi.Dtos;
 using KanbanApi.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KanbanApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class KanbanColumnController : ControllerBase
 {
     private readonly IKanbanColumnService _kanbanColumnService;
@@ -16,29 +18,29 @@ public class KanbanColumnController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<KanbanColumn>>> GetAll()
+    public async Task<ActionResult<List<KanbanColumnResponseDto>>> GetAll()
     {
         var kanbanColumns = await _kanbanColumnService.GetAllAsync();
         return Ok(kanbanColumns);
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<KanbanColumn>> GetById(int id)
+    public async Task<ActionResult<KanbanColumnResponseDto>> GetById(int id)
     {
         var kanbanColumn = await _kanbanColumnService.GetByIdAsync(id);
 
         if (kanbanColumn == null)
         {
-            return NotFound();
+            return NotFound("Kanban column not found.");
         }
 
         return Ok(kanbanColumn);
     }
 
     [HttpPost]
-    public async Task<ActionResult<KanbanColumn>> Create([FromBody] KanbanColumn kanbanColumn)
+    public async Task<ActionResult<KanbanColumnResponseDto>> Create([FromBody] CreateKanbanColumnDto createKanbanColumnDto)
     {
-        var createdKanbanColumn = await _kanbanColumnService.AddAsync(kanbanColumn);
+        var createdKanbanColumn = await _kanbanColumnService.CreateAsync(createKanbanColumnDto);
 
         if (createdKanbanColumn == null)
         {
@@ -49,13 +51,13 @@ public class KanbanColumnController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<KanbanColumn>> Update(int id, [FromBody] KanbanColumn kanbanColumn)
+    public async Task<ActionResult<KanbanColumnResponseDto>> Update(int id, [FromBody] UpdateKanbanColumnDto updateKanbanColumnDto)
     {
-        var updatedKanbanColumn = await _kanbanColumnService.UpdateAsync(id, kanbanColumn);
+        var updatedKanbanColumn = await _kanbanColumnService.UpdateAsync(id, updateKanbanColumnDto);
 
         if (updatedKanbanColumn == null)
         {
-            return BadRequest("User not found or Kanban column not found.");
+            return NotFound("Kanban column not found.");
         }
 
         return Ok(updatedKanbanColumn);
@@ -68,7 +70,7 @@ public class KanbanColumnController : ControllerBase
 
         if (!deleted)
         {
-            return NotFound();
+            return NotFound("Kanban column not found.");
         }
 
         return NoContent();

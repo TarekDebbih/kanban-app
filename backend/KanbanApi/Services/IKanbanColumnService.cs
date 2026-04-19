@@ -1,12 +1,12 @@
-using KanbanApi.Models;
+using KanbanApi.Dtos;
 
 namespace KanbanApi.Services;
 
 public interface IKanbanColumnService
 {
-    Task<KanbanColumn?> GetByIdAsync(int id);
-    Task<List<KanbanColumn>> GetAllAsync();
-    Task<KanbanColumn?> AddAsync(KanbanColumn kanbanColumn);
-    Task<KanbanColumn?> UpdateAsync(int id, KanbanColumn kanbanColumn);
+    Task<List<KanbanColumnResponseDto>> GetAllAsync();
+    Task<KanbanColumnResponseDto?> GetByIdAsync(int id);
+    Task<KanbanColumnResponseDto?> CreateAsync(CreateKanbanColumnDto createKanbanColumnDto);
+    Task<KanbanColumnResponseDto?> UpdateAsync(int id, UpdateKanbanColumnDto updateKanbanColumnDto);
     Task<bool> DeleteAsync(int id);
 }
