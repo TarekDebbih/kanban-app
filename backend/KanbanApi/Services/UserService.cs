@@ -1,3 +1,4 @@
+using KanbanApi.Dtos;
 using KanbanApi.Models;
 using KanbanApi.Repositories;
 
@@ -17,9 +18,21 @@ public class UserService : IUserService
         return await _userRepository.GetByIdAsync(id);
     }
 
-    public async Task<User?> GetByEmailAsync(string email)
+    public async Task<UserResponseDto?> GetByEmailAsync(string email)
     {
-        return await _userRepository.GetByEmailAsync(email);
+        var user = await _userRepository.GetByEmailAsync(email);
+
+        if (user == null)
+        {
+            return null;
+        }
+
+        return new UserResponseDto
+        {
+            Id = user.Id,
+            Email = user.Email,
+            Role = user.Role
+        };
     }
 
     public async Task<List<User>> GetAllAsync()
@@ -27,9 +40,22 @@ public class UserService : IUserService
         return await _userRepository.GetAllAsync();
     }
 
-    public async Task<User> CreateUserAsync(User user)
+    public async Task<UserResponseDto> CreateUserAsync(CreateUserDto createUserDto)
     {
+        var user = new User
+        {
+            Email = createUserDto.Email,
+            PasswordHash = createUserDto.Password,
+            Role = createUserDto.Role
+        };
+
         await _userRepository.AddAsync(user);
-        return user;
+
+        return new UserResponseDto
+        {
+            Id = user.Id,
+            Email = user.Email,
+            Role = user.Role
+        };
     }
 }

@@ -1,4 +1,4 @@
-using KanbanApi.Models;
+using KanbanApi.Dtos;
 using KanbanApi.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,14 +16,14 @@ public class UsersController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<User>> CreateUser([FromBody] User user)
+    public async Task<ActionResult<UserResponseDto>> CreateUser([FromBody] CreateUserDto createUserDto)
     {
-        var createdUser = await _userService.CreateUserAsync(user);
+        var createdUser = await _userService.CreateUserAsync(createUserDto);
         return CreatedAtAction(nameof(GetUserByEmail), new { email = createdUser.Email }, createdUser);
     }
 
     [HttpGet("{email}")]
-    public async Task<ActionResult<User>> GetUserByEmail(string email)
+    public async Task<ActionResult<UserResponseDto>> GetUserByEmail(string email)
     {
         var user = await _userService.GetByEmailAsync(email);
 
