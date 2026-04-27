@@ -25,6 +25,13 @@ public class KanbanColumnService : IKanbanColumnService
     {
         var kanbanColumns = await _kanbanColumnRepository.GetAllAsync();
 
+        if (!_currentUserService.IsAdmin)
+        {
+            kanbanColumns = kanbanColumns
+                .Where(kanbanColumn => kanbanColumn.UserId == _currentUserService.UserId)
+                .ToList();
+        }
+
         return kanbanColumns.Select(MapToResponseDto).ToList();
     }
 
@@ -91,7 +98,11 @@ public class KanbanColumnService : IKanbanColumnService
             return null;
         }
 
-        
+        if (!_currentUserService.IsAdmin && updateKanbanColumnDto.UserId != _currentUserService.UserId)
+        {
+            throw new UnauthorizedAccessException("You are not allowed to transfer this kanban column to another user.");
+        }
+
 
         existingKanbanColumn.Name = updateKanbanColumnDto.Name;
         existingKanbanColumn.Position = updateKanbanColumnDto.Position;
