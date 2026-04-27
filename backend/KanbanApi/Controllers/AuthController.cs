@@ -1,6 +1,7 @@
 using KanbanApi.Dtos;
 using KanbanApi.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace KanbanApi.Controllers;
 
@@ -14,7 +15,8 @@ public class AuthController : ControllerBase
     {
         _authService = authService;
     }
-
+    
+    [AllowAnonymous]
     [HttpPost("login")]
     public async Task<ActionResult<AuthResponseDto>> Login([FromBody] LoginRequestDto loginRequest)
     {
