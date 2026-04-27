@@ -25,7 +25,22 @@ public class TicketService : ITicketService
     {
         var tickets = await _ticketRepository.GetAllAsync();
 
-        return tickets.Select(MapToResponseDto).ToList();
+        if (_currentUserService.IsAdmin)
+        {
+            return tickets.Select(MapToResponseDto).ToList();
+        }
+
+        var allowedTickets = new List<Ticket>();
+
+        foreach (var ticket in tickets)
+        {
+            if (await CanAccessTicketAsync(ticket))
+            {
+                allowedTickets.Add(ticket);
+            }
+        }
+
+        return allowedTickets.Select(MapToResponseDto).ToList();
     }
 
     public async Task<TicketResponseDto?> GetByIdAsync(int id)
