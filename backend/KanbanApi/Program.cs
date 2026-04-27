@@ -8,6 +8,8 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using KanbanApi.Services.CurrentUser;
 using KanbanApi.Middlewares;
+using Microsoft.AspNetCore.Identity;
+using KanbanApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -51,6 +53,7 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();

@@ -1,16 +1,19 @@
 using KanbanApi.Dtos;
 using KanbanApi.Models;
 using KanbanApi.Repositories;
+using Microsoft.AspNetCore.Identity;
 
 namespace KanbanApi.Services;
 
 public class UserService : IUserService
 {
     private readonly IUserRepository _userRepository;
+    private readonly IPasswordHasher<User> _passwordHasher;
 
-    public UserService(IUserRepository userRepository)
+    public UserService(IUserRepository userRepository, IPasswordHasher<User> passwordHasher)
     {
         _userRepository = userRepository;
+        _passwordHasher = passwordHasher;
     }
 
     public async Task<User?> GetByIdAsync(int id)
@@ -45,9 +48,10 @@ public class UserService : IUserService
         var user = new User
         {
             Email = createUserDto.Email,
-            PasswordHash = createUserDto.Password,
             Role = "Standard"
         };
+
+        user.PasswordHash = _passwordHasher.HashPassword(user, createUserDto.Password);
 
         await _userRepository.AddAsync(user);
 

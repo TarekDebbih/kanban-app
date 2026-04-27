@@ -5,6 +5,7 @@ using KanbanApi.Dtos;
 using KanbanApi.Models;
 using KanbanApi.Repositories;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Identity;
 
 namespace KanbanApi.Services;
 
@@ -12,11 +13,16 @@ public class AuthService : IAuthService
 {
     private readonly IUserRepository _userRepository;
     private readonly IConfiguration _configuration;
+    private readonly IPasswordHasher<User> _passwordHasher;
 
-    public AuthService(IUserRepository userRepository, IConfiguration configuration)
+    public AuthService(
+        IUserRepository userRepository,
+        IConfiguration configuration,
+        IPasswordHasher<User> passwordHasher)
     {
         _userRepository = userRepository;
         _configuration = configuration;
+        _passwordHasher = passwordHasher;
     }
 
     public async Task<AuthResponseDto?> LoginAsync(LoginRequestDto loginRequest)
@@ -28,7 +34,13 @@ public class AuthService : IAuthService
             return null;
         }
 
-        if (user.PasswordHash != loginRequest.Password)
+        var passwordVerificationResult = _passwordHasher.VerifyHashedPassword(
+            user,
+            user.PasswordHash,
+            loginRequest.Password
+        );
+
+        if (passwordVerificationResult == PasswordVerificationResult.Failed)
         {
             return null;
         }
