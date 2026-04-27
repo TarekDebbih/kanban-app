@@ -1,6 +1,7 @@
 using KanbanApi.Dtos;
 using KanbanApi.Models;
 using KanbanApi.Repositories;
+using KanbanApi.Services.CurrentUser;
 
 namespace KanbanApi.Services;
 
@@ -8,13 +9,16 @@ public class TicketService : ITicketService
 {
     private readonly ITicketRepository _ticketRepository;
     private readonly IKanbanColumnRepository _kanbanColumnRepository;
+    private readonly ICurrentUserService _currentUserService;
 
     public TicketService(
         ITicketRepository ticketRepository,
-        IKanbanColumnRepository kanbanColumnRepository)
+        IKanbanColumnRepository kanbanColumnRepository,
+        ICurrentUserService currentUserService)
     {
         _ticketRepository = ticketRepository;
         _kanbanColumnRepository = kanbanColumnRepository;
+        _currentUserService = currentUserService;
     }
 
     public async Task<List<TicketResponseDto>> GetAllAsync()
@@ -33,6 +37,11 @@ public class TicketService : ITicketService
             return null;
         }
 
+        if (!await CanAccessTicketAsync(ticket))
+        {
+            throw new UnauthorizedAccessException("You are not allowed to access this ticket.");
+        }
+
         return MapToResponseDto(ticket);
     }
 
@@ -43,6 +52,11 @@ public class TicketService : ITicketService
         if (kanbanColumn == null)
         {
             return null;
+        }
+
+        if (!_currentUserService.IsAdmin && kanbanColumn.UserId != _currentUserService.UserId)
+        {
+            throw new UnauthorizedAccessException("You are not allowed to create a ticket in this kanban column.");
         }
 
         var ticket = new Ticket
@@ -69,11 +83,21 @@ public class TicketService : ITicketService
             return null;
         }
 
+        if (!await CanAccessTicketAsync(existingTicket))
+        {
+            throw new UnauthorizedAccessException("You are not allowed to update this ticket.");
+        }
+
         var kanbanColumn = await _kanbanColumnRepository.GetByIdAsync(updateTicketDto.KanbanColumnId);
 
         if (kanbanColumn == null)
         {
             return null;
+        }
+
+        if (!_currentUserService.IsAdmin && kanbanColumn.UserId != _currentUserService.UserId)
+        {
+            throw new UnauthorizedAccessException("You are not allowed to move this ticket to this kanban column.");
         }
 
         existingTicket.Title = updateTicketDto.Title;
@@ -89,6 +113,18 @@ public class TicketService : ITicketService
 
     public async Task<bool> DeleteAsync(int id)
     {
+        var ticket = await _ticketRepository.GetByIdAsync(id);
+
+        if (ticket == null)
+        {
+            return false;
+        }
+
+        if (!await CanAccessTicketAsync(ticket))
+        {
+            throw new UnauthorizedAccessException("You are not allowed to delete this ticket.");
+        }
+
         return await _ticketRepository.DeleteAsync(id);
     }
 
@@ -104,5 +140,17 @@ public class TicketService : ITicketService
             Position = ticket.Position,
             KanbanColumnId = ticket.KanbanColumnId
         };
+    }
+
+    private async Task<bool> CanAccessTicketAsync(Ticket ticket)
+    {
+        var kanbanColumn = await _kanbanColumnRepository.GetByIdAsync(ticket.KanbanColumnId);
+
+        if (kanbanColumn == null)
+        {
+            return false;
+        }
+
+        return _currentUserService.IsAdmin || kanbanColumn.UserId == _currentUserService.UserId;
     }
 }
