@@ -96,6 +96,7 @@ builder.Services
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
+await AdminSeeder.SeedAdminAsync(app.Services);
 
 // Middleware
 if (app.Environment.IsDevelopment())
