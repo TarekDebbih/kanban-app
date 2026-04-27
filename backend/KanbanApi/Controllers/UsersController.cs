@@ -24,7 +24,8 @@ public class UsersController : ControllerBase
         var createdUser = await _userService.CreateUserAsync(createUserDto);
         return CreatedAtAction(nameof(GetUserByEmail), new { email = createdUser.Email }, createdUser);
     }
-
+    
+    [Authorize(Roles = "Admin")]
     [HttpGet("{email}")]
     public async Task<ActionResult<UserResponseDto>> GetUserByEmail(string email)
     {
