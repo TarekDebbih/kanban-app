@@ -46,7 +46,7 @@ public class UserService : IUserService
         {
             Email = createUserDto.Email,
             PasswordHash = createUserDto.Password,
-            Role = createUserDto.Role
+            Role = "Standard"
         };
 
         await _userRepository.AddAsync(user);
