@@ -53,6 +53,11 @@ public class KanbanColumnService : IKanbanColumnService
             return null;
         }
 
+        if (!_currentUserService.IsAdmin && createKanbanColumnDto.UserId != _currentUserService.UserId)
+        {
+            throw new UnauthorizedAccessException("You are not allowed to create a kanban column for another user.");
+        }
+
         var kanbanColumn = new KanbanColumn
         {
             Name = createKanbanColumnDto.Name,
@@ -78,7 +83,7 @@ public class KanbanColumnService : IKanbanColumnService
         {
             throw new UnauthorizedAccessException("You are not allowed to update this kanban column.");
         }
-        
+
         var user = await _userRepository.GetByIdAsync(updateKanbanColumnDto.UserId);
 
         if (user == null)
