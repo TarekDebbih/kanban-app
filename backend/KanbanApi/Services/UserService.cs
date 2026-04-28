@@ -45,6 +45,13 @@ public class UserService : IUserService
 
     public async Task<UserResponseDto> CreateUserAsync(CreateUserDto createUserDto)
     {
+        var existingUser = await _userRepository.GetByEmailAsync(createUserDto.Email);
+
+        if (existingUser != null)
+        {
+            throw new InvalidOperationException("Email already used.");
+        }
+        
         var user = new User
         {
             Email = createUserDto.Email,

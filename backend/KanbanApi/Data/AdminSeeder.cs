@@ -13,22 +13,28 @@ public static class AdminSeeder
         var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         var passwordHasher = scope.ServiceProvider.GetRequiredService<IPasswordHasher<User>>();
 
-        var adminExists = await context.Users.AnyAsync(user => user.Role == "Admin");
+        var admin = await context.Users
+            .FirstOrDefaultAsync(user => user.Email == "admin@test.com");
 
-        if (adminExists)
+        if (admin == null)
         {
+            admin = new User
+            {
+                Email = "admin@test.com",
+                Role = "Admin"
+            };
+
+            admin.PasswordHash = passwordHasher.HashPassword(admin, "admin123");
+
+            context.Users.Add(admin);
+            await context.SaveChangesAsync();
+
             return;
         }
 
-        var admin = new User
-        {
-            Email = "admin@test.com",
-            Role = "Admin"
-        };
-
+        admin.Role = "Admin";
         admin.PasswordHash = passwordHasher.HashPassword(admin, "admin123");
 
-        context.Users.Add(admin);
         await context.SaveChangesAsync();
     }
 }
