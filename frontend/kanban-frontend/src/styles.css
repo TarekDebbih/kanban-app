@@ -1,1 +1,13 @@
-/* You can add global styles to this file, and also import other style files */
+* { box-sizing: border-box; }
+html, body { font-family: 'Inter', sans-serif; margin: 0; }
+
+::-webkit-scrollbar       { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #334155; border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+input[type=number] { -moz-appearance: textfield; }
+
+[draggable=true] { -webkit-user-drag: element; }

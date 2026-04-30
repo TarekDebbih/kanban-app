@@ -1,13 +1,38 @@
 <!doctype html>
-<html lang="en">
+<html lang="fr" class="dark">
 <head>
   <meta charset="utf-8">
-  <title>KanbanFrontend</title>
+  <title>Kanban — Personal Board</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          keyframes: {
+            slideIn: {
+              '0%':   { opacity: '0', transform: 'translateX(16px)' },
+              '100%': { opacity: '1', transform: 'translateX(0)' },
+            },
+          },
+          animation: {
+            slideIn: 'slideIn 0.2s ease-out',
+          },
+        },
+      },
+    };
+  </script>
 </head>
-<body>
+<body class="bg-slate-950">
   <app-root></app-root>
 </body>
 </html>

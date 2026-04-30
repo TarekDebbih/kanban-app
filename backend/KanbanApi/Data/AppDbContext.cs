@@ -31,10 +31,6 @@ public class AppDbContext : DbContext
             .WithMany(kc => kc.Tickets)
             .HasForeignKey(t => t.KanbanColumnId)
             .OnDelete(DeleteBehavior.Cascade);
-
-        modelBuilder.Entity<User>()
-        .HasIndex(user => user.Email)
-        .IsUnique();
     }
 
     

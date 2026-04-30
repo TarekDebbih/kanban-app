@@ -1,0 +1,24 @@
+import { Role } from './user';
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+  rememberMe: boolean;
+}
+
+export interface RegisterRequest {
+  email: string;
+  password: string;
+  role?: string;
+}
+
+export interface AuthResponse {
+  token: string;
+  expiration: string;
+  email: string;
+  role: Role;
+}
+
+export interface StoredAuth extends AuthResponse {
+  userId: number;
+}

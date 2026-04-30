@@ -24,7 +24,18 @@ public class UsersController : ControllerBase
         var createdUser = await _userService.CreateUserAsync(createUserDto);
         return CreatedAtAction(nameof(GetUserByEmail), new { email = createdUser.Email }, createdUser);
     }
-    
+
+    [Authorize(Roles = "Admin")]
+    [HttpGet]
+    public async Task<ActionResult<List<UserResponseDto>>> GetAll()
+    {
+        var users = await _userService.GetAllAsync();
+        var response = users
+            .Select(u => new UserResponseDto { Id = u.Id, Email = u.Email, Role = u.Role })
+            .ToList();
+        return Ok(response);
+    }
+
     [Authorize(Roles = "Admin")]
     [HttpGet("{email}")]
     public async Task<ActionResult<UserResponseDto>> GetUserByEmail(string email)

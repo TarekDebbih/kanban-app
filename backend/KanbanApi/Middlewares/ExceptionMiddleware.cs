@@ -26,14 +26,6 @@ public class ExceptionMiddleware
                 ex.Message
             );
         }
-        catch (InvalidOperationException ex)
-        {
-            await WriteErrorResponseAsync(
-                context,
-                HttpStatusCode.Conflict,
-                ex.Message
-            );
-        }
         catch (Exception)
         {
             await WriteErrorResponseAsync(
