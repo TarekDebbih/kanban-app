@@ -124,6 +124,12 @@ Un compte administrateur est créé automatiquement au démarrage pour faciliter
 
 ---
 
+## Compte Rendu
+
+Un fichier PDF détaillant le compte rendu du projet est disponible dans le dossier `docs`. Ce document explique en détail les choix techniques, les difficultés rencontrées, les solutions apportées, ainsi que les améliorations possibles pour le projet.
+
+---
+
 ## Routes/API principales
 
 Voici quelques-unes des routes principales de l'API :
@@ -160,7 +166,6 @@ Voici quelques-unes des routes principales de l'API :
 ## Améliorations possibles
 
 - Ajouter des tests unitaires et d'intégration.
-- Améliorer l'interface utilisateur pour une meilleure expérience responsive.
 - Ajouter un historique des déplacements de tickets.
 - Déployer l'application sur une plateforme cloud (Azure, Railway, Render, etc.).
 - Ajouter une fonctionnalité de recherche et de filtrage des tickets.
