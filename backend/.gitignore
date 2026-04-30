@@ -1,0 +1,37 @@
+# Build output
+/bin/
+/obj/
+/*.exe
+/*.dll
+/*.pdb
+/*.cache
+/*.log
+*.user
+*.lock.json
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Visual Studio
+.vs/
+.vscode/
+*.sln.ide
+
+# Logs
+logs/
+*.log
+*.nlog
+*.out
+
+# Database
+*.mdf
+*.ldf
+*.sqlite
+*.db
+
+# Secrets
+appsettings.Development.json
+appsettings.*.json
